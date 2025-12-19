@@ -1,0 +1,95 @@
+﻿@model JobConnect.Models.User
+
+@{
+    ViewData["Title"] = "Admin Profile";
+}
+
+<div class="container py-5 admin-profile-page">
+
+    <h2 class="admin-title text-center mb-4">Admin Profile</h2>
+
+    <div class="card shadow-sm p-4 mb-4 admin-profile-card">
+        <h4 class="mb-3 admin-section-title">Your Information</h4>
+
+        <p><strong>Email:</strong> @Model.Email</p>
+        <p><strong>Phone:</strong> @Model.Phone</p>
+        <p><strong>Role:</strong> <span class="badge bg-primary">@Model.Role</span></p>
+    </div>
+
+    <div class="card shadow-sm p-4 admin-edit-card">
+        <h4 class="mb-3 admin-section-title">Edit Profile</h4>
+
+        <form id="adminEditForm">
+            <input type="hidden" name="userId" value="@Model.UserId" />
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" name="Email" class="form-control admin-input" value="@Model.Email" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Phone</label>
+                <input type="text" name="Phone" class="form-control admin-input" value="@Model.Phone" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">New Password (optional)</label>
+                <input type="password" name="Password" class="form-control admin-input" placeholder="Leave blank if unchanged" />
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+        </form>
+    </div>
+
+</div>
+
+<!-- Modals -->
+<div class="modal fade" id="successModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">Success</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="successModalBody"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="errorModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Error</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="errorModalBody"></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById("adminEditForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            let form = e.target;
+            let formData = new FormData(form);
+
+            const response = await fetch("/Admin/UpdateProfile", {
+                method: "POST",
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                document.getElementById("successModalBody").innerText = result.message;
+                new bootstrap.Modal(document.getElementById("successModal")).show();
+            } else {
+                document.getElementById("errorModalBody").innerText = result.message;
+                new bootstrap.Modal(document.getElementById("errorModal")).show();
+            }
+        });
+    </script>
+}

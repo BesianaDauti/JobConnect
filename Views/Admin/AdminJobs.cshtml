@@ -1,0 +1,126 @@
+﻿@model List<JobConnect.Models.Job>
+
+@{
+    ViewData["Title"] = "Manage Jobs";
+}
+
+<div class="container py-5 admin-jobs-page">
+
+    <h2 class="admin-jobs-title mb-4 text-center">Job Management</h2>
+
+    <div class="card shadow-sm p-4 admin-jobs-card">
+
+        <table class="table table-bordered table-hover admin-jobs-table">
+            <thead class="admin-jobs-thead">
+                <tr>
+                    <th>Job ID</th>
+                    <th>Title</th>
+                    <th>Company</th>
+                    <th>Location</th>
+                    <th>Deadline</th>
+                    <th>Status</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model == null || !Model.Any())
+                {
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-3">
+                            No jobs found.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var job in Model)
+                    {
+                        <tr class="admin-jobs-row">
+                            <td>@job.JobId</td>
+                            <td>@job.Title</td>
+                            <td>@job.CompanyName</td>
+                            <td>@job.Location</td>
+                            <td>@job.Deadline.ToShortDateString()</td>
+
+                            <td>
+                                @if (job.IsActive)
+                                {
+                                    <span class="badge bg-success admin-jobs-status">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger admin-jobs-status">Inactive</span>
+                                }
+                            </td>
+
+                            <td class="text-center">
+
+                                <button class="btn btn-sm btn-outline-warning admin-jobs-btn-toggle"
+                                        data-id="@job.JobId">
+                                    @(job.IsActive ? "Disable" : "Enable")
+                                </button>
+
+                                <button class="btn btn-sm btn-outline-danger admin-jobs-btn-delete"
+                                        data-id="@job.JobId">
+                                    Delete
+                                </button>
+
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            document.querySelectorAll(".admin-jobs-btn-delete").forEach(btn => {
+                btn.addEventListener("click", async () => {
+
+                    if (!confirm("Are you sure you want to delete this job?"))
+                        return;
+
+                    let id = btn.getAttribute("data-id");
+
+                    const response = await fetch(`/Admin/DeleteJob?id=${id}`, {
+                        method: "POST"
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        btn.closest("tr").remove();
+                    } else {
+                        alert(result.message);
+                    }
+                });
+            });
+
+            document.querySelectorAll(".admin-jobs-btn-toggle").forEach(btn => {
+                btn.addEventListener("click", async () => {
+
+                    let id = btn.getAttribute("data-id");
+
+                    const response = await fetch(`/Admin/ToggleJob?id=${id}`, {
+                        method: "POST"
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        location.reload();
+                    } else {
+                        alert(result.message);
+                    }
+                });
+            });
+
+        });
+    </script>
+}

@@ -1,0 +1,232 @@
+﻿@using Microsoft.AspNetCore.Http
+@{
+    ViewData["Title"] = "Home - JobConnect";
+
+    var userId = Context.Session.GetInt32("UserId");
+    var role = Context.Session.GetString("Role");
+}
+
+<section class="hero-section d-flex align-items-center text-white">
+    <div class="overlay"></div>
+    <div class="container hero-content position-relative text-center">
+        <h1 class="display-5 fw-bold">Find the right job, connect with the right company</h1>
+        <p class="lead mb-4 text-hero">Remote, hybrid and office jobs - apply directly to employers.</p>
+
+        <div class="d-flex justify-content-center gap-2">
+            @if (userId == null)
+            {
+                <a class="btn btn-primary btn-lg" href="@Url.Action("Jobs", "Jobs")">Search Job</a>
+                <a class="btn btn-outline-light btn-lg" href="@Url.Action("Register", "Accounts", new { role = "JobSeeker" })">
+                    Register as job seeker
+                </a>
+            }
+            else if (role == "Employer")
+            {
+                <a class="btn btn-primary btn-lg" href="@Url.Action("AddJob", "Employer", new { returnUrl = Url.Action("Index", "Home") })">
+                    Publish Job
+                </a>
+            }
+            else if (role == "JobSeeker")
+            {
+                <a class="btn btn-primary btn-lg" href="@Url.Action("Jobs", "Jobs")">Search Job</a>
+            }
+        </div>
+
+    </div>
+</section>
+
+<section id="about" class="py-5 about-section">
+    <div class="container">
+        <div class="row align-items-center">
+
+            <div class="col-lg-6 text-start">
+                <p class="intro-text mb-2">Who We Are</p>
+                <h2 class="about-title mb-3">Connecting Talent with Opportunity</h2>
+                <p class="about-description">
+                    <strong>JobConnect</strong> bridges employers and job seekers in a simple, secure, and efficient way.
+                    We aim to make the hiring process faster, smarter, and more transparent for everyone.
+                    Whether you're looking for the right talent or your dream job — we're here to help you connect.
+                </p>
+            </div>
+
+            <div class="col-lg-6 text-center">
+                <img src="~/images/about.jpg" alt="Team collaboration" class="about-img img-fluid" />
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section id="services" class="py-5 services-section">
+    <div class="container">
+        <h2 class="text-center mb-4 services-title">Our Services</h2>
+        <div class="row g-4 text-center">
+            <div class="col-md-4">
+                <div class="p-4 border rounded-3 shadow-sm h-100 services-card">
+                    <h4>Job Posting</h4>
+                    <p>Employers can post job openings quickly and manage them with ease.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 border rounded-3 shadow-sm h-100 services-card">
+                    <h4>Talent Search</h4>
+                    <p>Browse through verified candidates and find the perfect match for your company.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 border rounded-3 shadow-sm h-100 services-card">
+                    <h4>Management Dashboard</h4>
+                    <p>Track applications, edit listings, and view statistics from one simple dashboard.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="how-it-works py-5">
+    <div class="container">
+
+        <h2 class="text-center mb-4 fw-bold display-6">
+            How JobConnect Works
+        </h2>
+        <p class="text-center text-muted mb-5 fs-5">
+            A simple and powerful process to help you find opportunities or hire top talent.
+        </p>
+
+        <div class="row g-4">
+
+            <div class="col-md-4 d-flex">
+                <div class="how-card">
+                    <div class="icon-box">
+                        <i class="bi bi-person-plus"></i>
+                    </div>
+                    <h4>Create Account</h4>
+                    <p>Register as a Job Seeker or Employer and set up your profile in minutes.</p>
+                </div>
+            </div>
+            <div class="col-md-4 d-flex">
+                <div class="how-card">
+                    <div class="icon-box">
+                        <i class="bi bi-briefcase"></i>
+                    </div>
+                    <h4>Find or Post Jobs</h4>
+                    <p>Explore job opportunities or post openings to reach the right talent.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4 d-flex">
+                <div class="how-card">
+                    <div class="icon-box">
+                        <i class="bi bi-send-check"></i>
+                    </div>
+                    <h4>Apply or Hire</h4>
+                    <p>Apply instantly or review applicants easily — fast and efficient.</p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+
+
+<section id="employers" class="py-5 employers-section">
+    <div class="container">
+        <div class="row align-items-center">
+
+            <div class="col-md-6 position-relative text-center mb-4 mb-md-0">
+                <div class="employer-image-wrapper">
+                    <div class="image-background-shape"></div>
+                    <img src="~/images/employer.jpg" alt="Employers" class="img-fluid employer-image">
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <h2 class="mb-3">For Employers</h2>
+                <p class="lead">
+                    Register your company, publish up to <strong>10 active job posts</strong>,
+                    and manage all your applications in one simple dashboard.
+                </p>
+                @if (userId == null)
+                {
+                    <a class="btn btn-outline-dark btn-lg mt-3" href="@Url.Action("Register", "Accounts", new { role = "Employer" })">
+                        Register as Employer
+                    </a>
+                }
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="jobseekers" class="py-5 jobseekers-section">
+    <div class="container d-flex align-items-center justify-content-between flex-wrap-reverse">
+        <div class="jobseekers-text">
+            <h2 class="mb-3">For Job Seekers</h2>
+            <p>
+                Create your personal profile and showcase your skills to potential employers.
+                Upload your CV and apply for up to <strong>10 job positions</strong> that match your interests and qualifications.
+                Enhance your visibility by adding your <strong>LinkedIn</strong> or <strong>GitHub</strong> profile,
+                and let companies discover your talent faster.
+                Take control of your career growth — all in one place.
+            </p>
+            @if (userId == null)
+            {
+                <a class="btn jobseekers-btn btn-lg mt-3" href="@Url.Action("Register", "Accounts", new { role = "JobSeeker" })">
+                    Register as Job Seeker
+                </a>
+            }
+
+        </div>
+
+        <div class="jobseekers-img-wrapper">
+            <img src="~/images/jobseeker.jpg" alt="Job Seekers" class="jobseekers-img" />
+        </div>
+    </div>
+</section>
+
+
+<section id="faq" class="py-5 faq-section">
+    <div class="container d-flex align-items-center justify-content-between">
+        <div class="faq-text">
+            <h2>Frequently Asked Questions</h2>
+            <p>
+                Have questions about how JobConnect works?
+                Here are some of the most common ones from our users.
+            </p>
+        </div>
+
+        <div class="faq-questions">
+            <div class="faq-item">
+                <button class="faq-question">How do I register on JobConnect? <span class="symbol">+</span></button>
+                <div class="faq-answer">
+                    <p>You can register by selecting your role (Employer or Job Seeker) and filling out the registration form.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">Can I post multiple job listings? <span class="symbol">+</span></button>
+                <div class="faq-answer">
+                    <p>Yes, employers can post up to 10 active job listings and manage them from the dashboard.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">How can I edit my profile? <span class="symbol">+</span></button>
+                <div class="faq-answer">
+                    <p>After logging in, go to your profile page where you can update your information and upload a new CV.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.querySelectorAll('.faq-question').forEach(button => {
+        button.addEventListener('click', () => {
+            const faqItem = button.parentElement;
+            faqItem.classList.toggle('active');
+        });
+    });
+</script>
+

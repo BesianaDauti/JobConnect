@@ -1,0 +1,82 @@
+﻿@model JobConnect.Models.Employer
+
+@{
+    ViewData["Title"] = "Edit Profile";
+}
+
+<div class="container py-5 edit-profile-page">
+
+    <div class="mb-3">
+        <button class="btn btn-outline-secondary" onclick="location.href='@Url.Action("EmployerProfile", "Employer")'">
+            ← Back to Profile
+        </button>
+    </div>
+
+    <h2 class="mb-4 text-center">Edit Employer Profile</h2>
+
+    <div class="card shadow-sm p-4">
+        <form asp-action="EditProfile" asp-controller="Employer" method="post" enctype="multipart/form-data">
+
+            <input type="hidden" asp-for="EmployerId" />
+
+            <h5 class="mb-3">Company Information</h5>
+
+            <div class="mb-3">
+                <label class="form-label">Company Name</label>
+                <input asp-for="CompanyName" class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input asp-for="User.Email" class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Phone</label>
+                <input asp-for="User.Phone" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">New Password (optional)</label>
+                <input type="password" class="form-control" name="NewPassword" placeholder="Enter new password (optional)">
+                <small class="text-muted">Leave blank if you don't want to change it.</small>
+            </div>
+
+
+            <div class="mb-3">
+                <label class="form-label">Website (optional)</label>
+                <input asp-for="Website" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Sector</label>
+                <input asp-for="Industry" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Location</label>
+                <input asp-for="Location" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Company Logo</label>
+
+                @* @if (!string.IsNullOrWhiteSpace(Model.LogoPath))
+                {
+                    <div class="mb-2">
+                        <img src="@Model.LogoPath" class="edit-logo-preview" alt="Logo" />
+                    </div>
+                } *@
+
+                <input type="file" name="LogoFile" class="form-control" accept="image/*" />
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 mt-3">Update Profile</button>
+
+        </form>
+    </div>
+</div>

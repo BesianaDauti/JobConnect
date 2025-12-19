@@ -1,0 +1,126 @@
+﻿@using Microsoft.AspNetCore.Http
+@{
+    var userId = Context.Session.GetInt32("UserId");
+    var role = Context.Session.GetString("Role");
+}
+
+<nav class="navbar navbar-expand-lg navbar-dark header-bg py-3 shadow-sm">
+    <div class="container">
+
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <img src="~/images/logo2 (2).png" alt="JobConnect" class="logo-img me-2" />
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="mainNav">
+            <ul class="navbar-nav align-items-center">
+
+                @if (role == "Admin")
+                {
+                    <li class="nav-item me-3">
+                        <a class="nav-link text-white" href="@Url.Action("Dashboard", "Admin")">Dashboard</a>
+                    </li>
+
+                    <li class="nav-item me-3">
+                        <a class="nav-link text-white" href="@Url.Action("Users", "Admin")">Users</a>
+                    </li>
+
+                    <li class="nav-item me-3">
+                        <a class="nav-link text-white" href="@Url.Action("Jobs", "Admin")">Jobs</a>
+                    </li>
+
+                    <li class="nav-item me-3">
+                        <a class="nav-link text-white" href="@Url.Action("Profile", "Admin")">Profile</a>
+                    </li>
+
+                    <li class="nav-item me-3">
+                        <a class="btn btn-outline-light px-3" href="@Url.Action("Logout", "Accounts")">Logout</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item me-2">
+                        <a class="nav-link text-white home-btn"
+                           href="@Url.Action("Index", "Home")">
+                            Home
+                        </a>
+                    </li>
+
+                    @if (role != "Employer" && role != "Admin")
+                    {
+                        <li class="nav-item me-3">
+                            <a class="nav-link text-white"
+                               href="@Url.Action("Jobs", "Jobs")">
+                                Search Job
+                            </a>
+                        </li>
+                    }
+
+                    @if (userId == null)
+                    {
+                        <li class="nav-item me-2">
+                            <a class="btn btn-outline-light px-3 login1-btn"
+                               href="@Url.Action("Login", "Accounts")">
+                                Log in
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="btn btn-light btn-sm register-btn"
+                               href="@Url.Action("Register", "Accounts")">
+                                Register
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        @if (role == "JobSeeker")
+                        {
+                            <li class="nav-item me-3">
+                                <a class="nav-link text-white"
+                                   href="@Url.Action("Profile", "JobSeeker")">
+                                    Profile
+                                </a>
+                            </li>
+                        }
+
+                        @if (role == "Employer")
+                        {
+                            <li class="nav-item me-3">
+                                <a class="nav-link text-white"
+                                   href="@Url.Action("Jobs", "Employer")">
+                                    My Jobs
+                                </a>
+                            </li>
+
+                            <li class="nav-item me-3">
+                                <a class="nav-link text-white"
+                                   href="@Url.Action("Plans", "Billing")">
+                                    Plans
+                                </a>
+                            </li>
+
+                            <li class="nav-item me-3">
+                                <a class="nav-link text-white"
+                                   href="@Url.Action("EmployerProfile", "Employer")">
+                                    Profile
+                                </a>
+                            </li>
+                        }
+
+                        <li class="nav-item me-3">
+                            <a class="btn btn-outline-light px-3"
+                               href="@Url.Action("Logout", "Accounts")">
+                                Logout
+                            </a>
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+    </div>
+</nav>

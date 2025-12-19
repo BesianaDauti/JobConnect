@@ -1,0 +1,59 @@
+﻿@model JobConnect.Models.Employer
+
+@{
+    ViewData["Title"] = "Employer Profile";
+
+    string Display(string value) =>
+        string.IsNullOrWhiteSpace(value) ? "Not provided" : value;
+}
+
+
+<div class="container py-5 employer-profile">
+
+    <div class="card employer-hero shadow-sm mb-4 p-4 text-center">
+        @if (!string.IsNullOrWhiteSpace(Model.LogoPath))
+        {
+            <div class="text-center mb-3">
+                <img src="@Model.LogoPath"
+                     alt="Company Logo"
+                     class="company-logo img-fluid rounded-circle" />
+            </div>
+        }
+        else
+        {
+            <div class="mb-3">
+                <i class="bi bi-building company-logo-placeholder"></i>
+            </div>
+        }
+
+
+        <h2 class="mb-1">@Display(Model.CompanyName)</h2>
+
+        <p class="text-muted">@Display(Model.Industry)</p>
+
+        <button class="btn btn-primary edit-employer-btn mt-3"
+                onclick="location.href='@Url.Action("EditProfile", "Employer")'">
+            Edit Profile
+        </button>
+    </div>
+
+
+
+    <div class="card employer-contact shadow-sm mb-4 p-4">
+        <h4 class="profile-section-title mb-3">Company Information</h4>
+
+        <p><strong>Email:</strong> @Display(Model.User?.Email)</p>
+        <p><strong>Phone:</strong> @Display(Model.User?.Phone)</p>
+        <p><strong>Website:</strong> @Display(Model.Website)</p>
+        <p><strong>Location:</strong> @Display(Model.Location)</p>
+        <p><strong>Industry:</strong> @Display(Model.Industry)</p>
+    </div>
+
+
+    <div class="card employer-description shadow-sm mb-4 p-4">
+        <h4 class="profile-section-title mb-3">About the Company</h4>
+
+        <p>@Display(Model.Description)</p>
+    </div>
+
+</div>

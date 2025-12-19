@@ -1,0 +1,124 @@
+﻿@model JobConnect.Models.Employer
+
+@{
+    ViewData["Title"] = "Billing Plans";
+}
+
+<h2 class="billing-title mb-4 text-center">Choose your plan</h2>
+
+<div class="row billing-plans g-4">
+
+    <!--BASIC PLAn -->
+    <div class="col-md-6">
+        <div class="billing-card billing-basic @(Model.Plan == "Basic" ? "billing-current" : "")">
+            <div class="billing-card-header">
+                <h4 class="billing-plan-name">Basic</h4>
+                <span class="billing-price">Free</span>
+            </div>
+
+            <ul class="billing-features">
+                <li>✔ Up to 3 active job posts</li>
+                <li>✔ Job management dashboard</li>
+                <li>✔ Applicant tracking</li>
+            </ul>
+
+            @if (string.IsNullOrWhiteSpace(Model.Plan) || Model.Plan == "Basic")
+            {
+                <div class="billing-current-badge">
+                    Current plan
+                </div>
+            }
+        </div>
+    </div>
+
+    <!--PAID PLAN -->
+    <div class="col-md-6">
+        <div class="billing-card billing-paid @(Model.Plan == "Paid" ? "billing-current" : "")">
+            <div class="billing-card-header">
+                <h4 class="billing-plan-name">Paid</h4>
+                <span class="billing-price">€1<span>/month</span></span>
+            </div>
+
+            <ul class="billing-features">
+                <li>✔ Unlimited job posts</li>
+                <li>✔ Priority listing</li>
+                <li>✔ Premium employer badge</li>
+            </ul>
+
+            @if (Model.Plan != "Paid")
+            {
+                <form asp-action="CreateCheckoutSession"
+                      asp-controller="Billing"
+                      method="post">
+                    @Html.AntiForgeryToken()
+
+                    <button class="btn billing-upgrade-btn w-100">
+                        Upgrade to Paid
+                    </button>
+                </form>
+            }
+            else
+            {
+                <div class="billing-current-badge">
+                    Current plan
+                </div>
+            }
+        </div>
+    </div>
+
+</div>
+
+@if (Model.Plan == "Paid" && Model.IsSubscriptionActive)
+{
+    <div class="billing-subscription-section">
+
+        <div class="billing-sub-card billing-sub-active">
+            <span class="billing-sub-title">Paid Plan Active</span>
+            <span class="billing-sub-date">
+                Valid until @Model.PaidUntil?.ToString("dd MMM yyyy")
+            </span>
+        </div>
+
+        @if (Model.SubscriptionCanceledAt != null)
+        {
+            <div class="billing-sub-card billing-sub-canceled">
+                Subscription canceled.<br />
+                Access ends on
+                <strong>@Model.PaidUntil?.ToString("dd MMM yyyy")</strong>
+            </div>
+        }
+        else
+        {
+            <form asp-action="CancelSubscription" method="post">
+                @Html.AntiForgeryToken()
+
+                <button class="billing-sub-btn billing-btn-cancel">
+                    Cancel subscription at period end
+                </button>
+            </form>
+        }
+
+        <div class="billing-sub-warning">
+            Switching to <strong>Basic</strong> will cancel your paid plan immediately.
+        </div>
+
+        <form asp-action="DowngradeToBasic" method="post">
+            @Html.AntiForgeryToken()
+
+            <button class="billing-sub-btn billing-btn-downgrade"
+                    onclick="return confirm('This will cancel your paid subscription immediately. Are you sure?')">
+                Switch to Basic
+            </button>
+        </form>
+
+    </div>
+}
+else
+{
+    <div class="billing-subscription-section">
+        <div class="billing-sub-card billing-sub-basic">
+            You are currently on the <strong>Basic</strong> plan.
+        </div>
+    </div>
+}
+

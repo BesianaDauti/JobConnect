@@ -1,0 +1,204 @@
+﻿@model JobConnect.Models.JobSeekerProfile
+
+@{
+    ViewData["Title"] = "Job Seeker Profile";
+
+    string Display(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? "Not provided" : value;
+
+    string DisplayInt(int? value) =>
+        value.HasValue ? value.Value.ToString() : "Not provided";
+
+    var applications = ViewBag.Applications as List<JobConnect.Models.JobApplication>;
+    string FormatName(string name) =>
+        char.ToUpper(name[0]) + name.Substring(1).ToLower();
+}
+
+
+<div class="container profile-page py-5">
+
+    <div class="card profile-hero shadow-sm mb-4 p-4 text-center">
+
+        <div class="d-flex flex-column align-items-center p-4">
+
+            <h2 class="profile-name">
+                @FormatName(Model.FirstName) @FormatName(Model.LastName)
+            </h2>
+
+            <p class="profile-title mb-1">@Display(Model.ProfessionalTitle)</p>
+
+            <p class="profile-location text-muted mb-0">
+                Location: @Display(Model.Location)
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="card profile-contact shadow-sm mb-4 p-4">
+        <h4 class="profile-section-title mb-3">Contact Information</h4>
+        <p><strong>Email:</strong> @Display(Model.User?.Email)</p>
+        <p><strong>Phone:</strong> @Display(Model.User?.Phone)</p>
+        <p><strong>LinkedIn:</strong> <a href="#"> @Display(Model.LinkedIn)</a></p>
+        <p><strong>GitHub / Portfolio:</strong> <a href="#"> @Display(Model.GitHub)</a></p>
+    </div>
+
+    <div class="card profile-skills shadow-sm mb-4 p-4">
+        <h4 class="profile-section-title mb-3">Skills & Experience</h4>
+        <p><strong>Skills:</strong> @Display(Model.Skills)</p>
+        <p><strong>Years of Experience:</strong> @DisplayInt(Model.ExperienceYears)</p>
+        <p><strong>About Me:</strong> @Display(Model.AboutMe)</p>
+    </div>
+     <div class="card profile-education shadow-sm mb-4 p-4">
+        <h4 class="profile-section-title mb-3">Education</h4>
+        <p><strong>University:</strong> @Display(Model.University)</p>
+        <p><strong>Degree:</strong> @Display(Model.Degree)</p>
+        <p><strong>Graduation Year:</strong> @DisplayInt(Model.GraduationYear)</p>
+    </div> 
+
+    <div class="card profile-resume shadow-sm mb-4 p-4">
+        <h4 class="profile-section-title mb-3">Resume/CV</h4>
+
+        @if (!string.IsNullOrWhiteSpace(Model.ResumeFilePath))
+        {
+            <p>Uploaded Resume: <a href="@Model.ResumeFilePath" target="_blank">Open Resume</a></p>
+        }
+        else
+        {
+            <p>Uploaded Resume: Not provided</p>
+        }
+
+        <input type="file"
+               id="resumeHidden"
+               name="ResumeFile"
+               class="d-none"
+               accept=".pdf,.doc,.docx" />
+
+
+        <button id="uploadResumeBtn" class="btn btn-outline-primary mt-2 profile-btn">
+            Upload New Resume
+        </button>
+
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mb-4">
+        <a href="@Url.Action("UpdateProfile", "JobSeeker")" class="btn btn-primary profile-btn edit-jobseeker-btn">
+            Edit Profile
+        </a>
+    </div>
+
+    <div class="card profile-jobs shadow-sm mb-4 p-4">
+        <h4 class="profile-section-title mb-3">Applied Jobs</h4>
+
+        @if (applications == null || applications.Count == 0)
+        {
+            <p class="text-muted">You have not applied to any jobs yet.</p>
+        }
+        else
+        {
+            <ul class="list-group list-group-flush">
+                @foreach (var app in applications)
+                {
+                    string statusClass = app.Status switch
+                    {
+                        "Accepted" => "text-success",
+                        "Rejected" => "text-danger",
+                        _ => "text-muted"
+                    };
+
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>
+                            <strong>@app.Job.Title - @app.Job.CompanyName</strong><br />
+                            <span class="@statusClass">@app.Status</span>
+                        </span>
+
+                        <button class="btn btn-sm btn-outline-danger remove-job-btn"
+                                data-id="@app.ApplicationId">
+                            ×
+                        </button>
+                    </li>
+                }
+            </ul>
+        }
+
+    </div>
+
+</div>
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const uploadBtn = document.getElementById("uploadResumeBtn");
+            const hiddenInput = document.getElementById("resumeHidden");
+
+            if (!uploadBtn || !hiddenInput) {
+                console.warn("Resume upload elements not found.");
+                return;
+            }
+
+            uploadBtn.addEventListener("click", () => {
+                hiddenInput.click();
+            });
+
+            hiddenInput.addEventListener("change", async () => {
+
+                if (hiddenInput.files.length === 0) return;
+
+                let formData = new FormData();
+                formData.append("ResumeFile", hiddenInput.files[0]);
+
+                const response = await fetch("/JobSeeker/UpdateResume", {
+                    method: "POST",
+                    body: formData
+                });
+
+                let result;
+                try {
+                    result = await response.json();
+                } catch {
+                    result = { message: "Unexpected server response." };
+                }
+
+                if (response.ok) {
+                    document.getElementById("successModalBody").innerText = result.message;
+                    new bootstrap.Modal(document.getElementById("successModal")).show();
+
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    document.getElementById("errorModalBody").innerText = result.message;
+                    new bootstrap.Modal(document.getElementById("errorModal")).show();
+                }
+            }); 
+
+
+            document.querySelectorAll(".remove-job-btn").forEach(btn => {
+
+                btn.addEventListener("click", async () => {
+
+                    const id = btn.getAttribute("data-id");
+
+                    const formData = new FormData();
+                    formData.append("applicationId", id);
+
+                    const response = await fetch("/JobSeeker/DeleteApplication", {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        btn.closest("li").remove();
+                        alert("Application removed!"); 
+                    } else {
+                        alert(result.message);
+                    }
+
+                });
+
+            });
+
+        }); 
+
+    </script>
+}

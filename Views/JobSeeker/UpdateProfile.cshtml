@@ -1,0 +1,180 @@
+﻿@model JobConnect.Models.JobSeekerProfile
+
+@{
+    ViewData["Title"] = "Update Profile";
+}
+
+<div class="container update-profile-page mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm p-4">
+                <div class="mb-3">
+                    <button class="btn btn-outline-secondary"
+                            onclick="location.href='@Url.Action("JobSeekerProfile", "JobSeeker")'">
+                        ← Back
+                    </button>
+                </div>
+
+                <h3 class="card-title text-center mb-4 update-profile-title">Update Profile</h3>
+
+                <form id="updateProfileForm"
+                      asp-action="UpdateProfile"
+                      asp-controller="JobSeeker"
+                      method="post"
+                      enctype="multipart/form-data">
+
+                    <h5 class="mb-3 section-title">Personal Information</h5>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="FirstName" class="form-label"></label>
+                            <input asp-for="FirstName" class="form-control update-input" required />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="LastName" class="form-label"></label>
+                            <input asp-for="LastName" class="form-control update-input" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input asp-for="@Model.User.Email" class="form-control update-input" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="User.Phone" class="form-label"></label>
+                        <input name="Phone"
+                               value="@Model.User.Phone"
+                               class="form-control update-input" />
+
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" name="Password" class="form-control update-input">
+                        <small class="text-muted">Leave blank if you don't want to change it.</small>
+                    </div>
+
+                    <h5 class="mb-3 section-title mt-4">Optional Information</h5>
+
+                    <div class="mb-3">
+                        <label asp-for="LinkedIn" class="form-label"></label>
+                        <input asp-for="LinkedIn" class="form-control update-input" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="GitHub" class="form-label"></label>
+                        <input asp-for="GitHub" class="form-control update-input" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Skills" class="form-label"></label>
+                        <input asp-for="Skills" class="form-control update-input" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ExperienceYears" class="form-label">Experience Years</label>
+                        <input asp-for="ExperienceYears" class="form-control update-input" type="number" />
+                    </div>
+
+                    <h5 class="mb-3 section-title mt-4">Professional Details</h5>
+
+                    <div class="mb-3">
+                        <label asp-for="ProfessionalTitle" class="form-label">Professional Title</label>
+                        <input asp-for="ProfessionalTitle" class="form-control update-input" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Location" class="form-label"></label>
+                        <input asp-for="Location" class="form-control update-input" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="AboutMe" class="form-label">About Me</label>
+                        <textarea asp-for="AboutMe" class="form-control update-input" rows="4"></textarea>
+                    </div>
+
+                    <h5 class="mb-3 section-title mt-4">Education</h5>
+
+                    <div class="mb-3">
+                        <label asp-for="University" class="form-label"></label>
+                        <input asp-for="University" class="form-control update-input" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Degree" class="form-label"></label>
+                        <input asp-for="Degree" class="form-control update-input" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="GraduationYear" class="form-label">Graduation Year</label>
+                        <input asp-for="GraduationYear" class="form-control update-input" type="number" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Upload New Resume</label>
+                        <input type="file" name="ResumeFile" class="form-control update-input" />
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="submit" class="btn btn-primary update-btn">Save Changes</button>
+                        <button type="button" class="btn btn-outline-danger delete-account-btn" id="deleteAccountBtn">
+                            Delete Account
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="successModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">Success</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="successModalBody"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="errorModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Error</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="errorModalBody"></div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                Are you sure you want to delete your account? This action cannot be undone.
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="~/js/update-profile.js"></script>
+    <script src="~/js/delete-account.js"></script>
+}
+

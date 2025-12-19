@@ -1,0 +1,167 @@
+﻿@model List<JobConnect.Models.JobApplication>
+
+@{
+    ViewData["Title"] = "Applicants";
+}
+
+<div class="container mt-5">
+
+    <a href="javascript:history.back()" class="btn btn-outline-secondary mb-3">
+        ← Back
+    </a>
+
+    <h2 class="mb-4 text-center">Applicants for this Job</h2>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info text-center">
+            No applicants have applied for this job yet.
+        </div>
+    }
+    else
+    {
+        <div class="list-group">
+            @foreach (var app in Model)
+            {
+                <div class="card shadow-sm mb-3 applicant-card">
+
+                    <div class="card-body d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <h5 class="mb-1 applicant-name">
+                                @((char.ToUpper(app.JobSeeker.FirstName[0]) + app.JobSeeker.FirstName.Substring(1).ToLower()))
+                                @((char.ToUpper(app.JobSeeker.LastName[0]) + app.JobSeeker.LastName.Substring(1).ToLower()))
+                            </h5>
+
+                            <small class="text-muted">
+                                Applied @app.AppliedAt.ToString("dd MMM yyyy HH:mm")
+                            </small>
+                        </div>
+
+                        <div class="d-flex gap-2 align-items-center">
+
+                            <a class="btn btn-view-profile"
+                               href="@Url.Action("ViewProfile", "Employer", new { id = app.JobSeeker.JobSeekerProfileId })">
+                                View Profile
+                            </a>
+
+                            <button class="btn btn-accept-applicant"
+                                    data-app-id="@app.ApplicationId"
+                                    @(app.Status != "Pending" ? "disabled" : "")>
+                                @(app.Status == "Accepted" ? "Accepted" : "Accept")
+                            </button>
+
+                            <button class="btn btn-delete delete-applicant-btn"
+                                    data-app-id="@app.ApplicationId"
+                                    @(app.Status == "Rejected" ? "disabled" : "")>
+                                ✕
+                            </button>
+
+                            @if (app.Status == "Rejected")
+                            {
+                                <span class="status-icon-employee text-danger" title="Rejected">
+                                    <i class="bi bi-x-circle-fill"></i>
+                                </span>
+                            }
+                            else if (app.Status == "Accepted")
+                            {
+                                <span class="status-icon-employee text-success" title="Accepted">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                </span>
+                            }
+                            else if (app.Status == "Pending")
+                            {
+                                <span class="status-icon-employee text-warning" title="Pending">
+                                    <i class="bi bi-clock-fill"></i>
+                                </span>
+                            }
+
+
+                        </div>
+
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+<div class="modal fade" id="confirmDeleteApplicantModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Reject Application</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to reject this application?
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-danger" id="confirmDeleteApplicantBtn">Reject</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            let applicationIdToDelete = 0;
+
+            document.querySelectorAll(".delete-applicant-btn").forEach(button => {
+                button.addEventListener("click", () => {
+                    applicationIdToDelete = button.dataset.appId;
+                    new bootstrap.Modal(document.getElementById("confirmDeleteApplicantModal")).show();
+                });
+            });
+
+            document.getElementById("confirmDeleteApplicantBtn").addEventListener("click", async () => {
+
+                const formData = new FormData();
+                formData.append("applicationId", applicationIdToDelete);
+
+                const response = await fetch("/Employer/DeleteApplicant", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    document.getElementById("successModalBody").innerText = result.message;
+                    new bootstrap.Modal(document.getElementById("successModal")).show();
+
+                    setTimeout(() => location.reload(), 1200);
+                } else {
+                    document.getElementById("errorModalBody").innerText = result.message;
+                    new bootstrap.Modal(document.getElementById("errorModal")).show();
+                }
+            });
+
+                    document.querySelectorAll(".btn-accept-applicant").forEach(btn => {
+            btn.addEventListener("click", async () => {
+
+                const applicationId = btn.getAttribute("data-app-id");
+
+                const formData = new FormData();
+                formData.append("applicationId", applicationId);
+
+                const response = await fetch("/Employer/AcceptApplicant", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    btn.innerText = "Accepted";
+                    btn.disabled = true;
+                } else {
+                    alert(result.message);
+                }
+            });
+        });
+
+        });
+    </script>
+}

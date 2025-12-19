@@ -1,0 +1,148 @@
+﻿@model JobConnect.Models.JobSeekerProfile
+
+@{
+    ViewData["Title"] = "Job Seeker Profile";
+}
+
+<div class="container mt-5">
+
+    <a href="javascript:history.back()" class="btn btn-outline-secondary mb-3">
+        ← Back
+    </a>
+
+    <div class="card shadow-lg p-4 employer-profile-card">
+
+        <div class="d-flex align-items-center mb-4">
+
+            <div class="employer-profile-avatar me-4">
+                <i class="bi bi-person-circle"></i>
+            </div>
+
+            <div>
+                <h2 class="employer-profile-name">
+                    @char.ToUpper(Model.FirstName[0])@Model.FirstName.Substring(1).ToLower()
+                    @char.ToUpper(Model.LastName[0])@Model.LastName.Substring(1).ToLower()
+                </h2>
+
+                <p class="text-muted mb-1">
+                    <strong>Email:</strong> @Model.User.Email
+                </p>
+
+                @if (!string.IsNullOrEmpty(Model.User?.Phone))
+                {
+                    <p class="text-muted mb-1">
+                        <strong>Phone:</strong> @Model.User?.Phone
+                    </p>
+                }
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="employer-profile-section-title">Experience</div>
+        <p>@Model.ExperienceYears</p>
+
+        <div class="employer-profile-section-title mt-4">Skills</div>
+        <p>@Model.Skills</p>
+
+        <div class="employer-profile-section-title mt-4">Skills</div>
+        <p>@Model.University</p>
+
+        <div class="employer-profile-section-title mt-4">Skills</div>
+        <p>@Model.Degree</p>
+
+        <div class="employer-profile-section-title mt-4">Resume</div>
+
+        @if (!string.IsNullOrEmpty(Model.ResumeFilePath))
+        {
+            <a href="@Url.Content(Model.ResumeFilePath)"
+               target="_blank"
+               class="btn employer-profile-download mt-2">
+                <i class="bi bi-file-earmark-pdf-fill"></i> Open Resume
+            </a>
+
+        }
+        else
+        {
+            <p class="text-muted">No resume uploaded.</p>
+        }
+
+        <div class="mt-4">
+            <button class="btn employer-profile-contact" id="openContactModal">
+                Contact
+            </button>
+        </div>
+
+    </div>
+</div>
+<div class="modal fade" id="contactModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header" style="background: var(--c1); color: white;">
+                <h5 class="modal-title">Contact Job Seeker</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label>Subject</label>
+                    <input type="text" id="contactSubject" class="form-control" placeholder="Enter subject">
+                </div>
+
+                <div class="mb-3">
+                    <label>Message</label>
+                    <textarea id="contactMessage" class="form-control" rows="4"
+                              placeholder="Write your message..."></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button class="btn btn-primary" id="sendContactBtn"
+                        style="background: var(--c5); border: none;">
+                    Send Message
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        document.getElementById("openContactModal").addEventListener("click", () => {
+            new bootstrap.Modal(document.getElementById("contactModal")).show();
+        });
+
+        document.getElementById("sendContactBtn").addEventListener("click", async () => {
+
+            const subject = document.getElementById("contactSubject").value.trim();
+            const message = document.getElementById("contactMessage").value.trim();
+            const jobSeekerId = @Model.JobSeekerProfileId;
+
+            if (!subject || !message) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("jobSeekerId", jobSeekerId);
+            formData.append("subject", subject);
+            formData.append("message", message);
+
+            const response = await fetch("/Employer/SendMessage", {
+                method: "POST",
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert("Message sent!");
+                location.reload();
+            } else {
+                alert("Error: " + result.message);
+            }
+        });
+    </script>
+}

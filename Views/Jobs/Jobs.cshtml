@@ -1,0 +1,192 @@
+﻿@model List<JobConnect.Models.Job>
+
+@{
+    ViewData["Title"] = "Search Jobs";
+    string Show(string? value) =>
+            string.IsNullOrWhiteSpace(value) ? "Not provided" : value;
+}
+
+<div class="container py-5 jobs-page">
+    <div class="mb-3">
+        <button class="btn btn-outline-secondary" onclick="history.back()">
+            ← Back
+        </button>
+    </div>
+
+    <h2 class="mb-4 text-center">Available Jobs</h2>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <select class="form-select" id="filterCategory">
+                <option value="All">All Categories</option>
+                @foreach (var c in ViewBag.Categories)
+                {
+                    <option value="@c">@c</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <select class="form-select" id="filterType">
+                <option value="All">All Types</option>
+                @foreach (var t in ViewBag.JobTypes)
+                {
+                    <option value="@t">@t</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <select class="form-select" id="filterLocation">
+                <option value="All">All Locations</option>
+                <option value="Remote">Remote</option>
+                <option value="Onsite">Onsite</option>
+            </select>
+        </div>
+
+        <div class="col-md-3 d-flex gap-2">
+            <button id="applyFilters" class="btn btn-primary w-100 ">Apply Filters</button>
+            <a href="/Jobs/Jobs" class="btn btn-secondary w-100">Clear</a>
+        </div>
+    </div>
+    <div class="row g-4 job-cards-grid">
+        @if (!Model.Any())
+        {
+            <div class="col-12 text-center mt-4">
+                <p class="text-muted fs-5">No jobs available at the moment.</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var job in Model.Where(j => j.PositionsAvailable > 0))
+            {
+                <div class="col-md-4 d-flex">
+                    <div class="card shadow-sm job-card h-100 flex-fill">
+                        <div class="card-body p-4 d-flex flex-column">
+
+                            <h3 class="card-title">@Show(job.Title)</h3>
+
+                            <p class="card-text"><strong>Company:</strong> @Show(job.CompanyName)</p>
+                            <p class="card-text"><strong>Location:</strong> @Show(job.Location)</p>
+                            <p class="card-text"><strong>Salary:</strong> @Show(job.Salary)</p>
+                            @if (job.PositionsAvailable > 0)
+                            {
+                                <p class="card-text"><strong>Positions Left:</strong> @job.PositionsAvailable</p>
+                            }
+
+                            <p class="card-text mt-auto">
+                                <small class="text-muted">
+                                    @job.JobType • Posted @( (DateTime.UtcNow - job.PostedAt).Days ) days ago
+                                </small>
+                            </p>
+
+                            <button class="btn btn-primary w-100 apply-btn"
+                                    data-job-id="@job.JobId">
+                                Apply Now
+                            </button>
+
+                            <a href="@Url.Action("Details", "Jobs", new { id = job.JobId })"
+                               class="btn btn-secondary w-100 mt-2">View Details</a>
+
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+<div class="modal fade" id="loginRequiredModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Login Required</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                You must be logged in as a <strong>Job Seeker</strong> to apply for this job.
+            </div>
+
+            <div class="modal-footer d-flex justify-content-between">
+                <a href="/Accounts/Login" class="btn btn-primary">Login</a>
+                <a href="/Accounts/Register" class="btn btn-secondary">Register</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="successModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">Success</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="successModalBody"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="errorModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Error</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="errorModalBody"></div>
+        </div>
+    </div>
+</div>
+<style>
+    #loginRequiredModal .modal-content {
+        border-radius: 16px;
+        border: none;
+        background: var(--white);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+        animation: fadeDown 0.25s ease-out;
+    }
+
+    #loginRequiredModal .modal-header {
+        background: var(--c2);
+        color: var(--white);
+        border-radius: 16px 16px 0 0;
+        padding: 1rem 1.5rem;
+    }
+
+    #loginRequiredModal .modal-body {
+        padding: 1.4rem;
+        font-size: 1.05rem;
+        color: var(--c1);
+        text-align: center;
+    }
+
+    #loginRequiredModal .btn-primary {
+        background: var(--c5);
+        border: none;
+    }
+    #loginRequiredModal .btn-primary:hover {
+        background: var(--c2);
+    }
+
+    #loginRequiredModal .btn-secondary {
+        background: var(--c1);
+        color: var(--white);
+        border: none;
+    }
+    #loginRequiredModal .btn-secondary:hover {
+        background: var(--c2);
+    }
+
+    #loginRequiredModal .btn-close {
+        filter: brightness(0) invert(1);
+    }
+</style>
+
+@section Scripts {
+    <script src="~/js/jobs.js"></script>
+}
+
+

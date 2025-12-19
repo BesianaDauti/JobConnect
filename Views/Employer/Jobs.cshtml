@@ -1,0 +1,80 @@
+﻿@model List<JobConnect.Models.Job>
+
+@{
+    ViewData["Title"] = "My Jobs";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="section-title-employer">My Posted Jobs</h2>
+
+        <a class="btn add-job-btn-employer" href="@Url.Action("AddJob", "Employer")">
+            + Add New Job
+        </a>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info text-center">
+            You have not posted any jobs yet.
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var job in Model)
+            {
+                bool isExpired = job.Deadline < DateTime.UtcNow;
+
+                if (job.PositionsAvailable <= 0 && !isExpired)
+                {
+                    continue;
+                }
+
+                <div class="col-md-4">
+                    <div class="job-card-employer shadow-sm p-4 position-relative">
+
+
+                        <a href="@Url.Action("EditJob", "Employer", new { id = job.JobId })"
+                           class="edit-icon">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+
+                        <h5 class="job-title-employer">@job.Title</h5>
+
+                        <p class="job-info-employer text-muted">
+                            @job.JobType • @job.Location
+                        </p>
+
+                        @if (job.PositionsAvailable > 0)
+                        {
+                            <p class="job-info-employer text-muted">
+                                <strong>Positions Left:</strong> @job.PositionsAvailable
+                            </p>
+                        }
+
+                        <p class="text-muted small mb-1">
+                            <strong>Posted:</strong> @job.PostedAt.ToString("dd MMM yyyy")
+                        </p>
+
+                        <p class="text-muted small">
+                            <strong>Deadline:</strong> @job.Deadline.ToString("dd MMM yyyy")
+                        </p>
+
+                        <a href="@Url.Action("Applicants", "Employer", new { id = job.JobId })"
+                           class="btn view-app-btn-employer w-100 mt-2">
+                            View Applicants
+                        </a>
+
+                        @if (isExpired)
+                        {
+                            <p class="text-danger small mt-2 fw-semibold text-center">
+                                This job has expired.
+                            </p>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

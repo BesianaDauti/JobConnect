@@ -1,0 +1,152 @@
+﻿@{
+    ViewData["Title"] = "Add Job";
+
+    var returnUrl = Context.Request.Query["returnUrl"].ToString();
+    if (string.IsNullOrEmpty(returnUrl))
+    {
+        returnUrl = Url.Action("Jobs", "Employer");
+    }
+}
+
+<div class="container py-5 add-job-page">
+
+    <div class="mb-3">
+        <button class="btn btn-outline-secondary" onclick="location.href='@returnUrl'">
+            ← Back
+        </button>
+    </div>
+
+    <h2 class="mb-4 text-center">Add New Job</h2>
+
+    <div class="card shadow-sm p-4 add-job-card">
+        <form id="addJobForm">
+
+            <div class="mb-3">
+                <label for="jobTitle" class="form-label">Job Title <span class="text-danger">*</span></label>
+                <input type="text" name="Title" class="form-control job-input" id="jobTitle"
+                       placeholder="Enter job title" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="jobCategory" class="form-label">Category <span class="text-danger">*</span></label>
+                <select name="Category" class="form-select job-input" id="jobCategory" required>
+                    <option selected disabled value="">Select category</option>
+                    <option>Software Development</option>
+                    <option>Design</option>
+                    <option>Marketing</option>
+                    <option>Business</option>
+                    <option>Sales</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="jobType" class="form-label">Job Type <span class="text-danger">*</span></label>
+                <select name="JobType" class="form-select job-input" id="jobType" required>
+                    <option selected disabled value="">Select type</option>
+                    <option>Full-time</option>
+                    <option>Part-time</option>
+                    <option>Remote</option>
+                    <option>Contract</option>
+                    <option>Internship</option>
+                    <option>Temporary</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="jobLocation" class="form-label">Location <span class="text-danger">*</span></label>
+                <input type="text" name="Location" class="form-control job-input" id="jobLocation"
+                       placeholder="City, Country or Remote" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="jobDeadline" class="form-label">Application Deadline <span class="text-danger">*</span></label>
+                <input type="date" name="Deadline" class="form-control job-input" id="jobDeadline" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="jobHours" class="form-label">Working Hours (optional)</label>
+                <input type="text" name="WorkingHours" class="form-control job-input" id="jobHours"
+                       placeholder="9am - 5pm">
+            </div>
+
+            <div class="mb-3">
+                <label for="jobSalary" class="form-label">Salary (optional)</label>
+                <input type="text" name="Salary" class="form-control job-input" id="jobSalary"
+                       placeholder="$50,000 - $70,000">
+            </div>
+
+            <div class="mb-3">
+                <label for="jobExperience" class="form-label">Experience Level</label>
+                <select name="ExperienceLevel" class="form-select job-input" id="jobExperience">
+                    <option selected disabled value="">Select experience</option>
+                    <option>Entry-level</option>
+                    <option>Mid-level</option>
+                    <option>Senior-level</option>
+                    <option>No experience</option>
+                    <option>Other</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Requirements</label>
+                <textarea class="form-control job-input" name="Requirements" rows="4"
+                          placeholder="Enter job requirements"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Responsibilities</label>
+                <textarea class="form-control job-input" name="Responsibilities" rows="4"
+                          placeholder="Enter job responsibilities"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Positions Available</label>
+                <input type="number" class="form-control job-input" name="PositionsAvailable"
+                       placeholder="e.g., 4">
+            </div>
+
+
+            <div class="mb-3">
+                <label for="jobDescription" class="form-label">Job Description <span class="text-danger">*</span></label>
+                <textarea name="Description" class="form-control job-input" id="jobDescription" rows="5"
+                          placeholder="Describe the job responsibilities and requirements..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 mt-3">Post Job</button>
+
+        </form>
+    </div>
+</div>
+<div class="modal fade" id="successModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">Success</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="successModalBody"></div>
+            <div class="modal-footer">
+                <button class="btn btn-success" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="errorModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Error</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="errorModalBody"></div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="~/js/add-job.js"></script>
+}

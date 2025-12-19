@@ -1,0 +1,76 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+
+    int totalJobSeekers = ViewBag.TotalJobSeekers ?? 0;
+    int totalEmployers = ViewBag.TotalEmployers ?? 0;
+    int totalJobs = ViewBag.TotalJobs ?? 0;
+    int totalApplications = ViewBag.TotalApplications ?? 0;
+}
+
+<div class="container py-5 admin-dashboard">
+
+    <h2 class="admin-dashboard-title text-center mb-4">Admin Dashboard</h2>
+    <p class="admin-dashboard-subtitle text-center mb-5">Overview of platform activity and statistics</p>
+
+    <div class="row g-4">
+
+        <div class="col-md-3">
+            <div class="admin-stat-card shadow-sm">
+                <h4 class="admin-stat-number">@totalJobSeekers</h4>
+                <p class="admin-stat-label">Job Seekers</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="admin-stat-card shadow-sm">
+                <h4 class="admin-stat-number">@totalEmployers</h4>
+                <p class="admin-stat-label">Employers</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="admin-stat-card shadow-sm">
+                <h4 class="admin-stat-number">@totalJobs</h4>
+                <p class="admin-stat-label">Total Jobs</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="admin-stat-card shadow-sm">
+                <h4 class="admin-stat-number">@totalApplications</h4>
+                <p class="admin-stat-label">Applications</p>
+            </div>
+        </div>
+
+    </div>
+
+    <hr class="my-5">
+
+    <h4 class="admin-quickactions-title mb-3">Quick Actions</h4>
+
+    <div class="row g-3">
+
+        <div class="col-md-4">
+            <a href="/Admin/Users" class="admin-action-card shadow-sm">
+                <i class="bi bi-people admin-action-icon"></i>
+                <span class="admin-action-text">Manage Users</span>
+            </a>
+        </div>
+
+        <div class="col-md-4">
+            <a href="/Admin/Jobs" class="admin-action-card shadow-sm">
+                <i class="bi bi-briefcase admin-action-icon"></i>
+                <span class="admin-action-text">Manage Jobs</span>
+            </a>
+        </div>
+
+        <div class="col-md-4">
+            <a href="/Admin/Profile" class="admin-action-card shadow-sm">
+                <i class="bi bi-flag admin-action-icon"></i>
+                <span class="admin-action-text">Profile</span>
+            </a>
+        </div>
+
+    </div>
+
+</div>
