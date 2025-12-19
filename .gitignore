@@ -435,3 +435,8 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+wwwroot/resumes/
+wwwroot/companylogos/
+wwwroot/temp_resumes/
+
